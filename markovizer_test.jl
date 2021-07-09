@@ -10,40 +10,35 @@ end
 function main()
 
     param_array = []
-    x = [[1, 2], [2, 3], [3,4], [5,7], [6,2], [3, 7]]
+    x = [[1, 2], [2, 3], [3,4], [5,7], [6,2], [3, 7], [25, 1], [34, 6], [3, 9]]
     
     model = []
 
-    labels = [1.5, 2.5, 3.5, 6, 4, 5]
+    labels = [1.5, 2.5, 3.5, 6, 4, 5, 13, 20, 6]
 
     layers = [2, 1]
     
-    initialθ = Num[0.5 0.5]
-
     data_size = 2
     data_num = 2
 
     weights_size = 2
-    lr = 0.1
+    lr = 0.0001
 
 
     @variables a[2:1]
 
 
-    θ = initialθ
     θ = [a[1] a[2]]
-    for epoch in 1:100
+    for epoch in 1:5000
         for (i, datum) in enumerate(x)
-            prediction = [θ[1]*datum[1] + θ[2]*datum[2]]
-            adjust = Symbolics.jacobian([(a[1]*datum[1] + a[2]*datum[2] - labels[i])^2], [a[1], a[2]])
-            println("grads")
-            println(adjust)
-            println("weights")
-            println(θ)
-            θ += lr*adjust
+            prediction = θ[1]*datum[1] + θ[2]*datum[2]
+            adjust = Symbolics.jacobian([(prediction - labels[i])^2], [a[1], a[2]])
+            θ -= lr*adjust
         end
     end
-    substitute.(θ, (Dict(a[1] => 0.8, a[2] => 0.8),))
+    
+    substitute.(θ, (Dict(a[1] => 37, a[2] => 25),))
+    
 
     #TODO: make this generate variable variables e.g. x_3_1 through x_3_5 to represent weights of neuron 3 connected to a layer of 5
     #future TODO: 
